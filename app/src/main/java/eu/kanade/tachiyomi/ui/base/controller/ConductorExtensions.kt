@@ -2,11 +2,10 @@ package eu.kanade.tachiyomi.ui.base.controller
 
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 
 fun Router.popControllerWithTag(tag: String): Boolean {
     val controller = getControllerWithTag(tag)
@@ -30,6 +29,6 @@ fun Controller.requestPermissionsSafe(permissions: Array<String>, requestCode: I
 
 fun Controller.withFadeTransaction(): RouterTransaction {
     return RouterTransaction.with(this)
-            .pushChangeHandler(FadeChangeHandler())
-            .popChangeHandler(FadeChangeHandler())
+        .pushChangeHandler(OneWayFadeChangeHandler())
+        .popChangeHandler(OneWayFadeChangeHandler())
 }

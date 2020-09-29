@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.SeekBar
+import androidx.appcompat.widget.AppCompatSeekBar
 import eu.kanade.tachiyomi.R
-
+import kotlin.math.abs
 
 class NegativeSeekBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
-        SeekBar(context, attrs) {
+    AppCompatSeekBar(context, attrs) {
 
     private var minValue: Int = 0
     private var maxValue: Int = 0
@@ -16,8 +17,11 @@ class NegativeSeekBar @JvmOverloads constructor(context: Context, attrs: Attribu
 
     init {
         val styledAttributes = context.obtainStyledAttributes(
-                attrs,
-                R.styleable.NegativeSeekBar, 0, 0)
+            attrs,
+            R.styleable.NegativeSeekBar,
+            0,
+            0
+        )
 
         try {
             setMinSeek(styledAttributes.getInt(R.styleable.NegativeSeekBar_min_seek, 0))
@@ -26,23 +30,25 @@ class NegativeSeekBar @JvmOverloads constructor(context: Context, attrs: Attribu
             styledAttributes.recycle()
         }
 
-        super.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
-                listener?.let { it.onProgressChanged(seekBar, minValue + value, fromUser) }
-            }
+        super.setOnSeekBarChangeListener(
+            object : OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, value: Int, fromUser: Boolean) {
+                    listener?.onProgressChanged(seekBar, minValue + value, fromUser)
+                }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-                listener?.let { it.onStartTrackingTouch(p0) }
-            }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                    listener?.onStartTrackingTouch(p0)
+                }
 
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-                listener?.let { it.onStopTrackingTouch(p0) }
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                    listener?.onStopTrackingTouch(p0)
+                }
             }
-        })
+        )
     }
 
     override fun setProgress(progress: Int) {
-        super.setProgress(Math.abs(minValue) + progress)
+        super.setProgress(abs(minValue) + progress)
     }
 
     fun setMinSeek(minValue: Int) {
@@ -65,5 +71,4 @@ class NegativeSeekBar @JvmOverloads constructor(context: Context, attrs: Attribu
         super.onRestoreInstanceState(state)
         super.setProgress(origProgress)
     }
-
 }

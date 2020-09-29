@@ -1,33 +1,26 @@
 -dontobfuscate
 
--dontwarn eu.kanade.tachiyomi.**
--keep class eu.kanade.tachiyomi.**
--keep class eu.kanade.tachiyomi.source.model.** { *; }
-
--keep class com.hippo.image.** { *; }
--keep interface com.hippo.image.** { *; }
--dontwarn nucleus.view.NucleusActionBarActivity
-
 # Extensions may require methods unused in the core app
+-dontwarn eu.kanade.tachiyomi.**
+-keep class eu.kanade.tachiyomi.** { public protected private *; }
+
 -keep class org.jsoup.** { *; }
 -keep class kotlin.** { *; }
 -keep class okhttp3.** { *; }
 -keep class com.google.gson.** { *; }
 -keep class com.github.salomonbrys.kotson.** { *; }
+-keep class com.squareup.duktape.** { *; }
 
-# OkHttp
--dontwarn okhttp3.**
--dontwarn okio.**
--dontwarn javax.annotation.**
--dontwarn retrofit2.Platform$Java8
+# Design library
+-dontwarn com.google.android.material.**
+-keep class com.google.android.material.** { *; }
+-keep interface com.google.android.material.** { *; }
+-keep public class com.google.android.material.R$* { *; }
 
-# Glide specific rules #
-# https://github.com/bumptech/glide
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep public class * extends com.bumptech.glide.AppGlideModule
--keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
-    **[] $VALUES;
-    public *;
+-keep class com.hippo.image.** { *; }
+-keep interface com.hippo.image.** { *; }
+-keepclassmembers class * extends nucleus.presenter.Presenter {
+    <init>();
 }
 
 # RxJava 1.1.0
@@ -46,26 +39,6 @@
     rx.internal.util.atomic.LinkedQueueNode consumerNode;
 }
 
-### Support v7, Design
-# http://stackoverflow.com/questions/29679177/cardview-shadow-not-appearing-in-lollipop-after-obfuscate-with-proguard/29698051
--keep class android.support.v7.widget.RoundRectDrawable { *; }
-
--keep public class android.support.v7.widget.** { *; }
--keep public class android.support.v7.internal.widget.** { *; }
--keep public class android.support.v7.internal.view.menu.** { *; }
--keep public class android.support.v7.graphics.drawable.** { *; }
-
--keep public class * extends android.support.v4.view.ActionProvider {
-    public <init>(android.content.Context);
-}
-
--dontwarn android.support.**
--dontwarn android.support.design.**
--keep class android.support.design.** { *; }
--keep interface android.support.design.** { *; }
--keep public class android.support.design.R$* { *; }
-
-
 # ReactiveNetwork
 -dontwarn com.github.pwittchen.reactivenetwork.**
 
@@ -83,10 +56,3 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
-
-# SnakeYaml
--keep class org.yaml.snakeyaml.** { public protected private *; }
--dontwarn org.yaml.snakeyaml.**
-
-# Duktape
--keep class com.squareup.duktape.** { *; }

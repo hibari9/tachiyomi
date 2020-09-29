@@ -2,7 +2,7 @@ package eu.kanade.tachiyomi.ui.reader.loader
 
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
-import eu.kanade.tachiyomi.util.EpubFile
+import eu.kanade.tachiyomi.util.storage.EpubFile
 import rx.Observable
 import java.io.File
 
@@ -44,11 +44,12 @@ class EpubPageLoader(file: File) : PageLoader() {
      * Returns an observable that emits a ready state unless the loader was recycled.
      */
     override fun getPage(page: ReaderPage): Observable<Int> {
-        return Observable.just(if (isRecycled) {
-            Page.ERROR
-        } else {
-            Page.READY
-        })
+        return Observable.just(
+            if (isRecycled) {
+                Page.ERROR
+            } else {
+                Page.READY
+            }
+        )
     }
-
 }

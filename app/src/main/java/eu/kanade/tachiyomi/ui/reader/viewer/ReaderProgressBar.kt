@@ -1,7 +1,5 @@
 package eu.kanade.tachiyomi.ui.reader.viewer
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -14,8 +12,13 @@ import android.view.animation.Animation
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
+import androidx.core.animation.doOnCancel
+import androidx.core.animation.doOnEnd
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.util.getResourceColor
+import eu.kanade.tachiyomi.util.system.getResourceColor
+import kotlin.math.min
 
 /**
  * A custom progress bar that always rotates while being determinate. By always rotating we give
@@ -23,9 +26,9 @@ import eu.kanade.tachiyomi.util.getResourceColor
  * user also approximately knows how much the operation will take.
  */
 class ReaderProgressBar @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
     /**
@@ -59,9 +62,13 @@ class ReaderProgressBar @JvmOverloads constructor(
      * The rotation animation to use while the progress bar is visible.
      */
     private val rotationAnimation by lazy {
-        RotateAnimation(0f, 360f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 0.5f
+        RotateAnimation(
+            0f,
+            360f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f,
+            Animation.RELATIVE_TO_SELF,
+            0.5f
         ).apply {
             interpolator = LinearInterpolator()
             repeatCount = Animation.INFINITE
@@ -75,7 +82,7 @@ class ReaderProgressBar @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
 
-        val diameter = Math.min(width, height)
+        val diameter = min(width, height)
         val thickness = diameter / 10f
         val pad = thickness / 2f
         ovalRect.set(pad, pad, diameter - pad, diameter - pad)
@@ -120,7 +127,7 @@ class ReaderProgressBar @JvmOverloads constructor(
      */
     override fun setVisibility(visibility: Int) {
         super.setVisibility(visibility)
-        val isVisible = visibility == View.VISIBLE
+        val isVisible = visibility == VISIBLE
         if (isVisible) {
             startAnimation()
         } else {
@@ -132,7 +139,7 @@ class ReaderProgressBar @JvmOverloads constructor(
      * Starts the rotation animation if needed.
      */
     private fun startAnimation() {
-        if (visibility != View.VISIBLE || windowVisibility != View.VISIBLE || animation != null) {
+        if (visibility != VISIBLE || windowVisibility != VISIBLE || animation != null) {
             return
         }
 
@@ -151,24 +158,21 @@ class ReaderProgressBar @JvmOverloads constructor(
      * Hides this progress bar with an optional fade out if [animate] is true.
      */
     fun hide(animate: Boolean = false) {
-        if (visibility == View.GONE) return
+        if (isGone) return
 
         if (!animate) {
-            visibility = View.GONE
+            isVisible = false
         } else {
-            ObjectAnimator.ofFloat(this, "alpha",  1f, 0f).apply {
+            ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).apply {
                 interpolator = DecelerateInterpolator()
                 duration = 1000
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        visibility = View.GONE
-                        alpha = 1f
-                    }
-
-                    override fun onAnimationCancel(animation: Animator?) {
-                        alpha = 1f
-                    }
-                })
+                doOnEnd {
+                    isVisible = false
+                    alpha = 1f
+                }
+                doOnCancel {
+                    alpha = 1f
+                }
                 start()
             }
         }
@@ -208,5 +212,4 @@ class ReaderProgressBar @JvmOverloads constructor(
             start()
         }
     }
-
 }

@@ -1,33 +1,30 @@
 package eu.kanade.tachiyomi.ui.reader
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
 import android.view.ViewGroup
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import eu.kanade.tachiyomi.R
+import eu.kanade.tachiyomi.databinding.ReaderPageSheetBinding
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.ui.reader.model.ReaderPage
-import kotlinx.android.synthetic.main.reader_page_sheet.*
 
 /**
  * Sheet to show when a page is long clicked.
  */
 class ReaderPageSheet(
-        private val activity: ReaderActivity,
-        private val page: ReaderPage
+    private val activity: ReaderActivity,
+    private val page: ReaderPage
 ) : BottomSheetDialog(activity) {
 
-    /**
-     * View used on this sheet.
-     */
-    private val view = activity.layoutInflater.inflate(R.layout.reader_page_sheet, null)
+    private val binding = ReaderPageSheetBinding.inflate(activity.layoutInflater, null, false)
 
     init {
-        setContentView(view)
+        setContentView(binding.root)
 
-        set_as_cover_layout.setOnClickListener { setAsCover() }
-        share_layout.setOnClickListener { share() }
-        save_layout.setOnClickListener { save() }
+        binding.setAsCoverLayout.setOnClickListener { setAsCover() }
+        binding.shareLayout.setOnClickListener { share() }
+        binding.saveLayout.setOnClickListener { save() }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,14 +41,13 @@ class ReaderPageSheet(
     private fun setAsCover() {
         if (page.status != Page.READY) return
 
-        MaterialDialog.Builder(activity)
-            .content(activity.getString(R.string.confirm_set_image_as_cover))
-            .positiveText(android.R.string.yes)
-            .negativeText(android.R.string.no)
-            .onPositive { _, _ ->
+        MaterialDialog(activity)
+            .message(R.string.confirm_set_image_as_cover)
+            .positiveButton(android.R.string.ok) {
                 activity.setAsCover(page)
                 dismiss()
             }
+            .negativeButton(android.R.string.cancel)
             .show()
     }
 
@@ -70,5 +66,4 @@ class ReaderPageSheet(
         activity.saveImage(page)
         dismiss()
     }
-
 }

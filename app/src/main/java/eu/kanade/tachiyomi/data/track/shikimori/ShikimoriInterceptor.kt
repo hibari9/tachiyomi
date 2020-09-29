@@ -22,16 +22,16 @@ class ShikimoriInterceptor(val shikimori: Shikimori, val gson: Gson) : Intercept
         if (currAuth.isExpired()) {
             val response = chain.proceed(ShikimoriApi.refreshTokenRequest(refreshToken))
             if (response.isSuccessful) {
-                newAuth(gson.fromJson(response.body()!!.string(), OAuth::class.java))
+                newAuth(gson.fromJson(response.body!!.string(), OAuth::class.java))
             } else {
                 response.close()
             }
         }
         // Add the authorization header to the original request.
         val authRequest = originalRequest.newBuilder()
-                .addHeader("Authorization", "Bearer ${oauth!!.access_token}")
-                .header("User-Agent", "Tachiyomi")
-                .build()
+            .addHeader("Authorization", "Bearer ${oauth!!.access_token}")
+            .header("User-Agent", "Tachiyomi")
+            .build()
 
         return chain.proceed(authRequest)
     }

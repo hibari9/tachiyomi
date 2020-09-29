@@ -2,13 +2,17 @@ package eu.kanade.tachiyomi.network
 
 import okhttp3.MediaType
 import okhttp3.ResponseBody
-import okio.*
+import okio.Buffer
+import okio.BufferedSource
+import okio.ForwardingSource
+import okio.Source
+import okio.buffer
 import java.io.IOException
 
 class ProgressResponseBody(private val responseBody: ResponseBody, private val progressListener: ProgressListener) : ResponseBody() {
 
     private val bufferedSource: BufferedSource by lazy {
-        Okio.buffer(source(responseBody.source()))
+        source(responseBody.source()).buffer()
     }
 
     override fun contentType(): MediaType {
@@ -25,7 +29,7 @@ class ProgressResponseBody(private val responseBody: ResponseBody, private val p
 
     private fun source(source: Source): Source {
         return object : ForwardingSource(source) {
-            internal var totalBytesRead = 0L
+            var totalBytesRead = 0L
 
             @Throws(IOException::class)
             override fun read(sink: Buffer, byteCount: Long): Long {
